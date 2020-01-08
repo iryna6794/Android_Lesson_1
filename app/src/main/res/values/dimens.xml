@@ -1,0 +1,9 @@
+<resources>
+    <dimen name="main_margin">20dp</dimen>
+    <dimen name="min_margin">4dp</dimen>
+
+    <dimen name="title_hello_main">50sp</dimen>
+    <dimen name="title_hello_other">40sp</dimen>
+
+    <dimen name="round_btn_size">50dp</dimen>
+</resources>

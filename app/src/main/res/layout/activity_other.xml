@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/background"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg_walk" />
+
+    <TextView
+        android:id="@+id/title_hello"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/hello"
+        android:textColor="@color/red"
+        android:textSize="@dimen/title_hello_other"
+        android:textStyle="bold" />
+
+    <ImageButton
+        android:id="@+id/button_home"
+        android:layout_width="@dimen/round_btn_size"
+        android:layout_height="@dimen/round_btn_size"
+        android:layout_gravity="bottom"
+        android:layout_margin="@dimen/min_margin"
+        android:background="@drawable/home"
+        android:contentDescription="@string/to_home" />
+</FrameLayout>
