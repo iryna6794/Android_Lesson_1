@@ -6,4 +6,5 @@
     <dimen name="title_hello_other">40sp</dimen>
 
     <dimen name="round_btn_size">50dp</dimen>
+    <dimen name="pet_size">70dp</dimen>
 </resources>

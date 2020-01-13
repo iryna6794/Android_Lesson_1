@@ -7,6 +7,8 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import static ru.javaops.android.tamagotchi.WalkActivity.INTENT_PET_TYPE;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override

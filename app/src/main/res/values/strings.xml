@@ -3,4 +3,8 @@
     <string name="background">background</string>
     <string name="hello">Hello World!</string>
     <string name="to_home">to Home</string>
+    <string name="cat">Cat</string>
+    <string name="dog">Dog</string>
+    <string name="cthulhu">Cthulhu</string>
+    <string name="pet">pet</string>
 </resources>
