@@ -27,9 +27,7 @@ import static android.view.View.TRANSLATION_Y;
 public class WalkActivity extends AppCompatActivity {
     public static final String INTENT_PET_TYPE = "pet_type";
 
-    private static final double DOG_VIEW_MAGNIFICATION = 1.7;
-    private static final double MAX_DISTANCE_LIMIT_DIVIDER = 1.5;
-    private static final double MIN_DISTANCE_LIMIT_DIVIDER = 8;
+    private static final double DOG_VIEW_MAGNIFICATION = 1.5;
     private static final int RANDOM_TIME_DURATION_TRANSLATE = 1000;
     private static final int MIN_TIME_DURATION_TRANSLATE = 300;
     private static final int COEFFICIENT_TIME_DURATION_TRANSLATE = 3;
@@ -39,16 +37,18 @@ public class WalkActivity extends AppCompatActivity {
 
     private Animator.AnimatorListener animatorListener;
     private ImageView petView;
-    private int borderHeight;
-    private int borderWidth;
-    private int height;
-    private int width;
+    private int maxWidth;
+    private int maxHeight;
     private int thisX;
     private int thisY;
     private int nextX;
     private int nextY;
     private float nextAngle;
     private float angle;
+
+    private static final float MOVE_DISTANCE_INDEX = 0.1f;
+    private float minMoveDistance;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +73,7 @@ public class WalkActivity extends AppCompatActivity {
         if (PetsType.DOG == petsType) {
             ViewGroup.LayoutParams params = petView.getLayoutParams();
             params.height = (int) (petView.getLayoutParams().height * DOG_VIEW_MAGNIFICATION);
+            params.width = (int) (petView.getLayoutParams().width * DOG_VIEW_MAGNIFICATION);
             petView.setLayoutParams(params);
         }
         petView.setOnTouchListener(new View.OnTouchListener() {
@@ -117,13 +118,11 @@ public class WalkActivity extends AppCompatActivity {
             @Override
             public void run() {
                 final FrameLayout layout = findViewById(R.id.layoutWalk);
-                int radius = (int) (Math.hypot(petView.getHeight(), petView.getWidth()) / 2);
-                borderWidth = radius - petView.getWidth() / 2;
-                borderHeight = radius - petView.getHeight() / 2;
-                width = layout.getWidth() - radius * 2;
-                height = layout.getHeight() - radius * 2;
-                thisX = width >> 1;
-                thisY = height >> 1;
+                minMoveDistance = (layout.getHeight() + layout.getWidth()) * MOVE_DISTANCE_INDEX;
+                maxWidth = layout.getWidth() - petView.getWidth();
+                maxHeight = layout.getHeight() - petView.getHeight();
+                thisX = maxWidth / 2;
+                thisY = maxHeight / 2;
                 petView.setX(thisX);
                 petView.setY(thisY);
                 startAnimation();
@@ -132,13 +131,9 @@ public class WalkActivity extends AppCompatActivity {
     }
 
     private void startAnimation() {
-        int distance;
-        do {
-            nextX = (int) (Math.random() * width) + borderWidth;
-            nextY = (int) (Math.random() * height) + borderHeight;
-            distance = (int) Math.hypot(thisX - nextX, thisY - nextY);
-        }
-        while (isPetPositionCorrect(distance));
+        nextX = getRandom(maxWidth, thisX);
+        nextY = getRandom(maxHeight, thisY);
+        int distance = getDistanceBetweenPoints(thisX, nextX, thisY, nextY);
 
         nextAngle = (float) Math.toDegrees(Math.atan2(thisY - nextY, thisX - nextX));
         int rotationDuration = (int) (Math.random() * RANDOM_TIME_DURATION_ROTATE +
@@ -151,20 +146,30 @@ public class WalkActivity extends AppCompatActivity {
                 .ofFloat(petView, View.ROTATION, nextAngle - DEFAULT_ROTATION);
         rotate.setDuration(rotationDuration);
 
-        final PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat(TRANSLATION_X, nextX);
-        final PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat(TRANSLATION_Y, nextY);
+        final PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat(TRANSLATION_X, thisX);
+        final PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat(TRANSLATION_Y, thisY);
         final ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(petView, pvhX, pvhY);
         animator.setDuration(translateDuration);
         animator.setStartDelay(rotationDuration - rotationDuration / COEFFICIENT_TIME_DURATION_ROTATE);
 
         final AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(rotate, animator);
+//        animatorSet.playTogether(animator);
         animatorSet.addListener(animatorListener);
         animatorSet.start();
     }
 
-    private boolean isPetPositionCorrect(int distance) {
-        return distance < Math.max(width, height) / MIN_DISTANCE_LIMIT_DIVIDER ||
-                distance > Math.max(width, height) / MAX_DISTANCE_LIMIT_DIVIDER;
+    private int getRandom(int max, int currentPoint) {
+        int newPoint;
+        do {
+            newPoint = (int) (Math.random() * (max + 1));
+        } while (Math.abs(newPoint - currentPoint) < minMoveDistance);
+        return newPoint;
+    }
+
+    private int getDistanceBetweenPoints(int thisX, int nextX, int thisY, int nextY) {
+        int yDif = Math.abs(nextY - thisX);
+        int xDif = Math.abs(nextX - thisY);
+        return (int) Math.hypot(yDif, xDif);
     }
 }
